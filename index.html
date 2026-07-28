@@ -1,4 +1,220 @@
-<script>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TKYNEUM — Gerador de Encartes</title>
+  <style>
+    :root {
+      --bg-color: #0a0c10;
+      --card-bg: #14171f;
+      --border-color: #232936;
+      --accent-color: #2563eb;
+      --accent-hover: #1d4ed8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success-color: #10b981;
+      --error-color: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .header {
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 16px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      background-color: #0b0d13;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--accent-color);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: var(--accent-hover);
+    }
+
+    button:active {
+      transform: scale(0.99);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .status-msg {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      text-align: center;
+      display: none;
+    }
+
+    .status-msg.success {
+      display: block;
+      background-color: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--success-color);
+    }
+
+    .status-msg.error {
+      display: block;
+      background-color: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: var(--error-color);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>TKYNEUM Retail</h1>
+      <p>Gerador de Encartes & Ofertas Automatizado</p>
+    </div>
+
+    <form id="encarteForm">
+      <div class="form-group">
+        <label for="webhookUrl">URL do Webhook (n8n)</label>
+        <input type="url" id="webhookUrl" placeholder="https://seu-n8n.com/webhook/gerar-encarte-web" required>
+      </div>
+
+      <div class="form-group">
+        <label for="nome">Nome do Produto</label>
+        <input type="text" id="nome" placeholder="Ex: CERVEJA HEINEKEN 330ML" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="preco_de">Preço "De" (R$)</label>
+          <input type="text" id="preco_de" placeholder="7,99">
+        </div>
+        <div class="form-group">
+          <label for="preco_por">Preço "Por" (R$)</label>
+          <input type="text" id="preco_por" placeholder="5,99" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="categoria">Categoria</label>
+          <select id="categoria" required>
+            <option value="bebidas">Bebidas</option>
+            <option value="mercearia" selected>Mercearia</option>
+            <option value="hortifruti">Hortifruti</option>
+            <option value="laticinios">Laticínios</option>
+            <option value="limpeza">Limpeza</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="validade">Validade / Tag</label>
+          <input type="text" id="validade" placeholder="Ex: Oferta Válida Hoje">
+        </div>
+      </div>
+
+      <button type="submit" id="btnSubmit">Gerar Encarte</button>
+      <div id="statusMsg" class="status-msg"></div>
+    </form>
+  </div>
+
+  <script>
     const form = document.getElementById('encarteForm');
     const btnSubmit = document.getElementById('btnSubmit');
     const statusMsg = document.getElementById('statusMsg');
@@ -54,3 +270,5 @@
       }
     });
   </script>
+</body>
+</html>
