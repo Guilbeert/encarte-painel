@@ -215,59 +215,61 @@
   </div>
 
   <script>
-    const form = document.getElementById('encarteForm');
-    const btnSubmit = document.getElementById('btnSubmit');
-    const statusMsg = document.getElementById('statusMsg');
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('encarteForm');
+      const btnSubmit = document.getElementById('btnSubmit');
+      const statusMsg = document.getElementById('statusMsg');
 
-    const savedWebhook = localStorage.getItem('tkyneum_webhook_url');
-    if (savedWebhook) {
-      document.getElementById('webhookUrl').value = savedWebhook;
-    }
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const webhookUrl = document.getElementById('webhookUrl').value.trim();
-      localStorage.setItem('tkyneum_webhook_url', webhookUrl);
-
-      const payload = {
-        nome: document.getElementById('nome').value.trim(),
-        preco_de: document.getElementById('preco_de').value.trim(),
-        preco_por: document.getElementById('preco_por').value.trim(),
-        categoria: document.getElementById('categoria').value,
-        validade: document.getElementById('validade').value.trim()
-      };
-
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = 'Processando Encarte...';
-      statusMsg.className = 'status-msg';
-      statusMsg.textContent = '';
-
-      try {
-        const response = await fetch(webhookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true' // <--- Pula a tela de aviso do ngrok
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (response.ok) {
-          statusMsg.className = 'status-msg success';
-          statusMsg.textContent = '✅ Encarte gerado com sucesso!';
-          form.reset();
-          document.getElementById('webhookUrl').value = webhookUrl;
-        } else {
-          throw new Error(`Erro ${response.status}: Falha ao processar requisição.`);
-        }
-      } catch (err) {
-        statusMsg.className = 'status-msg error';
-        statusMsg.textContent = `❌ ${err.message || 'Erro ao conectar com o webhook.'}`;
-      } finally {
-        btnSubmit.disabled = false;
-        btnSubmit.textContent = 'Gerar Encarte';
+      const savedWebhook = localStorage.getItem('tkyneum_webhook_url');
+      if (savedWebhook) {
+        document.getElementById('webhookUrl').value = savedWebhook;
       }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const webhookUrl = document.getElementById('webhookUrl').value.trim();
+        localStorage.setItem('tkyneum_webhook_url', webhookUrl);
+
+        const payload = {
+          nome: document.getElementById('nome').value.trim(),
+          preco_de: document.getElementById('preco_de').value.trim(),
+          preco_por: document.getElementById('preco_por').value.trim(),
+          categoria: document.getElementById('categoria').value,
+          validade: document.getElementById('validade').value.trim()
+        };
+
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = 'Processando Encarte...';
+        statusMsg.className = 'status-msg';
+        statusMsg.textContent = '';
+
+        try {
+          const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true' // <--- Pula a tela de aviso do ngrok
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+            statusMsg.className = 'status-msg success';
+            statusMsg.textContent = '✅ Encarte gerado com sucesso!';
+            form.reset();
+            document.getElementById('webhookUrl').value = webhookUrl;
+          } else {
+            throw new Error(`Erro ${response.status}: Falha ao processar requisição.`);
+          }
+        } catch (err) {
+          statusMsg.className = 'status-msg error';
+          statusMsg.textContent = `❌ ${err.message || 'Erro ao conectar com o webhook.'}`;
+        } finally {
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = 'Gerar Encarte';
+        }
+      });
     });
   </script>
 </body>
